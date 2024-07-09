@@ -1,5 +1,7 @@
 - test on Python 3.2
 
+- renew common passwords list
+
 - use difflib.ratio() on common passwords?...
 
 - use leet-speak + difflib.ratio() on common passwords?...
