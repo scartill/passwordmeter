@@ -1,31 +1,30 @@
 # -*- coding: utf-8 -*-
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # file: $Id$
 # auth: Philip J Grabner <grabner@cadit.com>
 # date: 2013/10/26
 # copy: (C) Copyright 2013 Cadit Health Inc., All Rights Reserved.
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 import re
-import asset
-import pkg_resources
-
 from .i18n import _
+from .common import COMMONS
+import logging as lg
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 DEFAULT_INFLECT = 0.75
-DEFAULT_WEIGHT  = 1.0
+DEFAULT_WEIGHT = 1.0
 DEFAULT_CLIPMIN = 0
 DEFAULT_CLIPMAX = 1.3
-DEFAULT_SKEW    = 0
-DEFAULT_SPREAD  = 1.0
+DEFAULT_SKEW = 0
+DEFAULT_SPREAD = 1.0
 DEFAULT_FACTORS = 'length,charmix,variety,casemix,notword,phrase'
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 common10k = frozenset(
-  asset.load('passwordmeter:res/common.txt').read().decode().split('\n'))
+  COMMONS.strip().split('\n'))
 
-#------------------------------------------------------------------------------
+
 def asym(value, target, switch=DEFAULT_INFLECT):
   if value >= target:
     return 1 - ( ( 1 - switch ) * target / value )
@@ -61,8 +60,10 @@ class Factor(object):
     self.spread     = float(spread)
     if category is not None:
       self.category = category
+
   def test(self, value, extra):
     raise NotImplementedError()
+
   def adjust(self, value):
     value = self.skew + self.spread * value
     if value < self.clipmin:
@@ -162,18 +163,21 @@ class Meter(object):
   def __init__(self, settings=None):
     if settings is None:
       settings = dict()
+
     self.threshold = float(settings.get('threshold', DEFAULT_INFLECT))
     factors = settings.get('factors') or DEFAULT_FACTORS
-    if asset.isstr(factors):
-      factors = [s.strip() for s in factors.split(',')]
+    factors = [s.strip() for s in factors.split(',')]
+
     for key in settings.keys():
       key = key.split('.')
+
       if len(key) >= 3 \
           and key[0] == 'factor' and key[2] == 'class' \
           and key[1] not in factors:
         factors.append(key[1])
-    self.factors   = [self._load(factor, settings) for factor in factors]
-    self.logger    = asset.symbol(settings.get('logger'))
+
+    self.factors = [self._load(factor, settings) for factor in factors]
+    # self.logger    = asset.symbol(settings.get('logger'))
     self.pessimism = 1.0 / float(settings.get('pessimism', 10))
 
   #----------------------------------------------------------------------------
@@ -185,16 +189,21 @@ class Meter(object):
       'variety'  : VarietyFactor,
       'notword'  : NotWordFactor,
       'phrase'   : PhraseFactor,
-      }
+    }
+
     params = dict()
-    if asset.isstr(factor):
-      for key, value in settings.items():
-        if key.startswith('factor.' + factor + '.'):
-          params[key[len(factor) + 8:]] = value
-    factor = params.pop('class', factor)
+
+    # if asset.isstr(factor):
+    #   for key, value in settings.items():
+    #     if key.startswith('factor.' + factor + '.'):
+    #       params[key[len(factor) + 8:]] = value
+
+    # factor = params.pop('class', factor)
+
     if factor in predef:
       return predef[factor](**params)
-    return asset.symbol(factor)(**params)
+
+    return factor(**params)
 
   #----------------------------------------------------------------------------
   def test(self, value, extra=None):
@@ -220,10 +229,11 @@ class Meter(object):
       result   = factor.test(value, extra)
       scr, wgt = factor.adjust(result[0])
       crv      = curve(scr, offset=self.pessimism)
-      if self.logger:
-        self.logger.debug(
-          'factor %s: score=%f, base-weight=%f, curve-weight=%f',
-          factor.category, scr, wgt, crv)
+        
+      lg.debug(
+        'factor %s: score=%f, base-weight=%f, curve-weight=%f',
+        factor.category, scr, wgt, crv)
+      
       wgt    *= crv
       score  += scr * wgt
       weight += wgt

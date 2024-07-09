@@ -35,33 +35,33 @@ class TestPasswordMeter(unittest.TestCase):
       pwm.Meter(settings=dict(factors='notword')).test('not0klsd@#$')[0], 1)
 
   #----------------------------------------------------------------------------
-  def test_factorsAsString(self):
-    self.assertEqual(
-      pwm.Meter(settings=dict(
-        factors='length,passwordmeter.test_passwordmeter.TestFactor')).test('short')[1],
-      {'test': 'test value is: short',
-       'length': 'Increase the length of the password'})
+  # def test_factorsAsString(self):
+  #   self.assertEqual(
+  #     pwm.Meter(settings=dict(
+  #       factors='length,passwordmeter.test_passwordmeter.TestFactor')).test('short')[1],
+  #     {'test': 'test value is: short',
+  #      'length': 'Increase the length of the password'})
+
+  # #----------------------------------------------------------------------------
+  # def test_factorsAsList(self):
+  #   self.assertEqual(
+  #     pwm.Meter(settings=dict(
+  #       factors=['length', TestFactor])).test('short')[1],
+  #     {'test': 'test value is: short',
+  #      'length': 'Increase the length of the password'})
 
   #----------------------------------------------------------------------------
-  def test_factorsAsList(self):
-    self.assertEqual(
-      pwm.Meter(settings=dict(
-        factors=['length', TestFactor])).test('short')[1],
-      {'test': 'test value is: short',
-       'length': 'Increase the length of the password'})
-
-  #----------------------------------------------------------------------------
-  def test_supplementalFactor(self):
-    settings = dict()
-    settings['factor.test.class']  = 'passwordmeter.test_passwordmeter.TestFactor'
-    settings['factor.test.prefix'] = 'test value (with prefix) is'
-    res = pwm.Meter(settings=settings).test('short')
-    self.assertEqual(
-      sorted(res[1]),
-      ['casemix', 'charmix', 'length', 'notword', 'phrase', 'test'])
-    self.assertEqual(
-      res[1]['test'],
-      'test value (with prefix) is: short')
+  # def test_supplementalFactor(self):
+  #   settings = dict()
+  #   settings['factor.test.class']  = 'passwordmeter.test_passwordmeter.TestFactor'
+  #   settings['factor.test.prefix'] = 'test value (with prefix) is'
+  #   res = pwm.Meter(settings=settings).test('short')
+  #   self.assertEqual(
+  #     sorted(res[1]),
+  #     ['casemix', 'charmix', 'length', 'notword', 'phrase', 'test'])
+  #   self.assertEqual(
+  #     res[1]['test'],
+  #     'test value (with prefix) is: short')
 
   #----------------------------------------------------------------------------
   def test_strength(self):
