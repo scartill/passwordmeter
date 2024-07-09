@@ -1,4 +1,4 @@
-- test on Python 3.2
+- test on Python 3.8
 
 - renew common passwords list
 

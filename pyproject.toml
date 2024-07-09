@@ -1,0 +1,33 @@
+[project]
+name = "passwordmeter"
+version = "2.0.0"
+authors = [
+  { name="Philip J Grabner, Cadit Health Inc", email="oss@cadit.com" },
+  { name="Boris Resnick", email="boris.resnick@gmail.com"}
+]
+description = "A password strength measuring library."
+readme = "README.rst"
+requires-python = ">=3.8"
+classifiers = [
+    # 'Development Status :: 1 - Planning',
+    'Development Status :: 4 - Beta',
+    # 'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Programming Language :: Python',
+    'Operating System :: OS Independent',
+    'Natural Language :: English',
+    'License :: OSI Approved :: MIT License',
+    'License :: Public Domain'
+]
+keywords=['password', 'strength', 'checker', 'meter']
+
+[project.urls]
+Homepage = "https://github.com/scartill/passwordmeter"
+Issues = "https://github.com/scartill/passwordmeter/issues"
+
+[project.scripts]
+pwm = "passwordmeter.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
